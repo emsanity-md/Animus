@@ -35,6 +35,15 @@
                           text rather than reserved for decoration. */
   --hairline: #e6e0d7;
 
+  /* -- loading --------------------------------------------------------- */
+  /* One flat fill, no sweep. The page allows exactly one gradient and it is
+     the functional hero scrim; a shimmer would be a second one, and on a
+     design this quiet it reads as noise rather than as "busy". It is pitched
+     a step darker than --sand so it registers on paper, stone AND sand
+     alike — a skeleton that vanishes into one of its three backgrounds is
+     worse than no skeleton. */
+  --skeleton-base: #eae4da;
+
   /* -- shadcn token mapping ------------------------------------------- */
   --background: var(--paper);
   --foreground: var(--ink);
@@ -100,6 +109,9 @@
   --ink-faint: #8a8177; /* 4.92:1 on the ground */
   --hairline: #3a342e;
 
+  /* Lifted off --stone so it still reads on both the ground and the card. */
+  --skeleton-base: #262019;
+
   /* -- shadcn token mapping ------------------------------------------- */
   --background: var(--paper);
   --foreground: var(--ink);
@@ -126,6 +138,76 @@
 
   /* Deeper and softer: on near-black, a shadow reads as a shadow only if
      it is both darker and further away. */
+  --elevation:
+    0 1px 2px -1px rgb(0 0 0 / 0.5), 0 12px 30px -16px rgb(0 0 0 / 0.7);
+}
+
+/* ==========================================================================
+   The catalogue surface
+
+   /home is a browsing surface, not a document, and it gets a dark ground for
+   the same reason the rest of the site is on paper: covers are the content.
+   A quiet dark field is what makes flat-shaded key art read as posters
+   rather than as coloured rectangles.
+
+   It is a SEPARATE scope class rather than a second `.dark`, for two
+   reasons that both matter:
+
+   1. `.dark` belongs to next-themes, which writes it onto <html> from the
+      visitor's stored preference. A second rule of the same name would either
+      fight it or be silently overridden depending on specificity, and the
+      landing page's toggle would start repainting /home behind the user's
+      back. Nothing else on the site is allowed to own that class.
+   2. Because the scope is a descendant and not <html>, the two surfaces can
+      coexist. /home is dark whichever theme the visitor chose on /, and
+      navigating back leaves their choice untouched.
+
+   The consequence to respect when building inside it: `dark:` variants key
+   off <html> and will NOT apply here. Everything on this surface themes
+   through these tokens instead.
+
+   The values are the dark theme's, on purpose. Same warm near-black, same
+   vermilion, same Shippori and Manrope — one brand, two grounds.
+   ========================================================================== */
+
+.surface-ink {
+  color-scheme: dark;
+
+  --brand: #e05a4e; /* 5.14:1 on this ground, 4.83:1 on --stone */
+  --brand-strong: #e8695c;
+  --brand-wash: #2b1512;
+  --brand-edge: #4a2620;
+
+  --paper: #14110e;
+  --stone: #1b1815;
+  --sand: #221e1a;
+  --ink: #f5f1ea;
+  --ink-muted: #a89f92;
+  --ink-faint: #8a8177;
+  --hairline: #3a342e;
+  --skeleton-base: #262019;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--stone);
+  --card-foreground: var(--ink);
+  --popover: var(--sand);
+  --popover-foreground: var(--ink);
+  --primary: #c0332a; /* a fill behind white, never as text */
+  --primary-foreground: #ffffff;
+  --secondary: var(--sand);
+  --secondary-foreground: var(--ink);
+  --muted: var(--sand);
+  --muted-foreground: var(--ink-muted);
+  --accent: #2a2622;
+  --accent-foreground: var(--ink);
+  --destructive: #e05a4e;
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: var(--brand);
+
+  --selection-fg: #14110e;
+
   --elevation:
     0 1px 2px -1px rgb(0 0 0 / 0.5), 0 12px 30px -16px rgb(0 0 0 / 0.7);
 }
@@ -169,6 +251,12 @@
   --color-ink-muted: var(--ink-muted);
   --color-ink-faint: var(--ink-faint);
   --color-hairline: var(--hairline);
+
+  /* Loading. A utility rather than a raw hex so the skeleton primitive works
+     unchanged on paper and on the catalogue surface — one component, no
+     variant. */
+  --color-skeleton: var(--skeleton-base);
+  --animate-skeleton: skeleton-pulse 1.7s ease-in-out infinite;
 
   /* -- fluid type scale ------------------------------------------------
      Display carries the page. Section is the recurring band heading.
@@ -263,6 +351,65 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+/* ==========================================================================
+   Loading
+
+   A flat fill that breathes. Opacity only — no transform, no sweep, so the
+   placeholder never shifts anything and cannot contribute layout movement of
+   its own while it waits.
+
+   The global reduced-motion rule in @layer base already collapses animations
+   to 0.01ms, which would land the pulse on its final keyframe (opacity 1) and
+   leave a perfectly usable static block. That is the desired outcome, but it
+   is arrived at by accident, so it is also stated explicitly here.
+   ========================================================================== */
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-skeleton {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Spotlight rotation
+
+   Opacity only, and re-triggered by React swapping the element's key rather
+   than by a class toggle — which is why it is a keyframe on mount instead of a
+   transition. Still no transform: the hero's box is a fixed height, and moving
+   anything inside it is a layout shift waiting to happen.
+
+   Static under reduced motion, like every other entrance here.
+   ========================================================================== */
+
+@keyframes spotlight-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.spotlight-slide {
+  animation: spotlight-in 700ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-slide {
+    animation: none;
   }
 }
 

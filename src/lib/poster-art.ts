@@ -54,6 +54,27 @@ export const POSTER_ART: Record<string, string> = {
  */
 export const POSTER_MAX_WIDTH = 460;
 
+/**
+ * Covers are NOT 2:3, and they are not even the same ratio as each other.
+ * Measured across the spotlight set:
+ *
+ *   460x652  0.7055   Neon Genesis Evangelion
+ *   460x640  0.7188   Cowboy Bebop
+ *   460x647  0.7110   Fullmetal Alchemist: Brotherhood
+ *   460x651  0.7066   Death Note
+ *   460x649  0.7088   Mob Psycho 100
+ *   460x667  0.6897   Steins;Gate
+ *
+ * Mean ~0.707, spread ~0.03, and every height differs too — so nothing about
+ * the artwork can be assumed.
+ *
+ * This matters because a frame hardcoded to 2:3 (0.667) crops the sides off
+ * all six. That is what made the spotlight poster look "not fully visible",
+ * and it was quietly doing the same to all 36 cards in the grids. Frames use
+ * this ratio instead, so the worst case is under 2% of crop and most are exact.
+ */
+export const COVER_RATIO = 0.707;
+
 export function posterFor(title: string): string | undefined {
   return POSTER_ART[title];
 }
