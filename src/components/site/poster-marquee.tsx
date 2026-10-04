@@ -22,7 +22,7 @@
  * nothing hidden behind a seam.
  */
 
-import Image from "next/image";
+import { PosterImage } from "@/components/poster-image";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "cn";
@@ -79,18 +79,17 @@ function PosterCard({ item }: { item: MarqueeItem }) {
   const poster = posterFor(item.title);
   return (
     <article className="group/card flex flex-col gap-2.5">
-      <div className="relative aspect-2/3 overflow-hidden rounded-md bg-sand ring-1 ring-hairline">
-        {poster ? (
-          <Image
-            src={poster}
-            alt={`${item.title} cover artwork`}
-            fill
-            sizes={`${CARD_WIDTH}px`}
-            quality={90}
-            className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
-          />
-        ) : null}
-      </div>
+      {poster ? (
+        <PosterImage
+          src={poster}
+          alt={`${item.title} cover artwork`}
+          sizes={`${CARD_WIDTH}px`}
+          quality={90}
+          imageClassName="transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
+        />
+      ) : (
+        <div className="aspect-2/3 w-full rounded-md bg-sand ring-1 ring-hairline" />
+      )}
 
       <div className="flex flex-col gap-1.5">
         <h3 className="font-display min-h-[2.7em] text-[0.9375rem] leading-snug font-normal">

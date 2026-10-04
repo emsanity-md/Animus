@@ -134,6 +134,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // which the server cannot know about. Without this, every visit logs a
       // hydration mismatch on the html element.
       suppressHydrationWarning
+      // The stylesheet sets `scroll-behavior: smooth` for in-page anchors, and
+      // the landing page leans on that for its section links. This attribute is
+      // how Next is told the two cases differ: without it, smooth scrolling
+      // also applies across route transitions, so navigating to /home from the
+      // masthead animates a scroll that has nowhere to go.
+      data-scroll-behavior="smooth"
       className={`${shippori.variable} ${manrope.variable} h-full antialiased`}
     >
       <head>
